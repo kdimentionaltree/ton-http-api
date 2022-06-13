@@ -39,6 +39,7 @@ jobs:
           python -m pip install -r requirements.txt
       - name: Build distributions
         shell: bash -l {0}
+        working-directory: ./ton-http-api/
         run: TON_HTTP_API_VERSION=${{ needs.set_version.outputs.version }} python setup.py sdist bdist_wheel
       - name: Check distributions
         shell: bash -l {0}
