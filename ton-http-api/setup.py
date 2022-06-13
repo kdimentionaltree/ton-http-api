@@ -45,7 +45,7 @@ setup(
     description="Python API for TON (Telegram Open Network)",
     long_description_content_type="text/markdown",
     long_description=long_description,
-    entrypoints={
+    entry_points={
         'console_scripts': [
             'toncenter-server = pyTON.cli:main'
         ]
