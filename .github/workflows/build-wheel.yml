@@ -33,7 +33,6 @@ jobs:
           python-version: 3.8
       - name: Install build dependencies
         run: |
-          cd ton-http-api
           python -m pip install build wheel
           python -m pip install -r requirements.txt
       - name: Build distributions
@@ -41,11 +40,13 @@ jobs:
         run: TON_HTTP_API_VERSION=${{ needs.set_version.outputs.version }} python setup.py sdist bdist_wheel
       - name: Check distributions
         shell: bash -l {0}
+        working-directory: ./ton-http-api/
         run: | 
           echo $(pwd)
           ls $(pwd)/
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
+        working-directory: ./ton-http-api/
         with:
           name: ton-http-api-package
           path: |
