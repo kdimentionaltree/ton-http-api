@@ -46,12 +46,11 @@ jobs:
           ls $(pwd)/
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
-        working-directory: ./ton-http-api/
         with:
           name: ton-http-api-package
           path: |
-            dist/*.whl
-            dist/*.tar.gz
+            ton-http-api/dist/*.whl
+            ton-http-api/dist/*.tar.gz
   upload-pypi:
     runs-on: ubuntu-20.04
     needs: [ set_version, build_wheel ]
