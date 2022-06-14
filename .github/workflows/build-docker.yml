@@ -21,7 +21,7 @@ jobs:
           format: "${major}.${minor}.${patch}a${increment}"
           bump_each_commit: false
     outputs:
-      version: ${{ github.repository == 'toncenter/ton-http-api' && github.event_name == 'push' && github.ref == 'refs/heads/master' && steps.versioning.outputs.version_tag || steps.versioning.outputs.version}}
+      version: ${{ github.repository == 'kdimentionaltree/ton-http-api' && github.event_name == 'push' && github.ref == 'refs/heads/master' && steps.versioning.outputs.version_tag || steps.versioning.outputs.version}}
   build_docker:
     runs-on: ubuntu-20.04
     needs: [ set_version ]
