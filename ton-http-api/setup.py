@@ -1,12 +1,11 @@
 import os
 
 from setuptools import setup, find_packages
-from os.path import dirname, join
+from os.path import dirname, join, pardir
 
-# with open(join(dirname(__file__), "README.md"), "r") as f:
-#     long_description = f.read()
 
-long_description = 'WIP'
+with open(join(pardir(dirname(__file__)), "README.md"), "r") as f:
+    long_description = f.read()
 
 version = os.environ.get('TON_HTTP_API_VERSION', '0.0.0')
 
@@ -26,7 +25,7 @@ setup(
         'ring>=0.9.1',
         'uvicorn>=0.17.6',
         'gunicorn>=20.1.0',
-        'pytonlib>=0.0.10',
+        'pytonlib>=0.0.11',
         'inject>=4.3.1'
     ],
     package_data={},
@@ -47,7 +46,7 @@ setup(
     long_description=long_description,
     entry_points={
         'console_scripts': [
-            'toncenter-server = pyTON.cli:main'
+            'ton-http-api = pyTON.cli:main'
         ]
     }
 )
