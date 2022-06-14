@@ -55,7 +55,7 @@ jobs:
           echo ::set-output name=version::${VERSION}
           echo ::set-output name=buildx_args::--platform ${DOCKER_PLATFORMS} \
             --cache-from="type=local,src=/tmp/.buildx-cache" \
-            --cache-to="type=local,src=/tmp/.buildx-cache-new"
+            --cache-to="type=local,src=/tmp/.buildx-cache-new" \
             ${TAGS} --file ton-http-api/.docker/Dockerfile ton-http-api
       - name: Cache Docker layers
         uses: actions/cache@v2
