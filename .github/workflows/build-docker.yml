@@ -54,8 +54,7 @@ jobs:
           echo ::set-output name=docker_image::${DOCKER_IMAGE}
           echo ::set-output name=version::${VERSION}
           echo ::set-output name=buildx_args::--platform ${DOCKER_PLATFORMS} \
-            --cache-from="type=local,src=/tmp/.buildx-cache" \
-            --cache-to="type=local,dest=/tmp/.buildx-cache-new" \
+            --cache-from="type=registry,${{ steps.prepare.outputs.docker_image }}"
             ${TAGS} --file ton-http-api/.docker/Dockerfile ton-http-api
       - name: Cache Docker layers
         uses: actions/cache@v2
@@ -77,11 +76,7 @@ jobs:
         if: success() && github.repository == 'kdimentionaltree/ton-http-api' && github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
           docker buildx build --output "type=image,push=true" ${{ steps.prepare.outputs.buildx_args }}
-      - name: Move Cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
       - name: Inspect image
-        if: always() && github.repository == 'kdimentionaltree/ton-http-api'
+        if: always() && github.repository == 'kdimentionaltree/ton-http-api' && github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
           docker buildx imagetools inspect ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }}
