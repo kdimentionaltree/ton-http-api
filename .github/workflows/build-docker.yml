@@ -21,8 +21,8 @@ jobs:
           format: "${major}.${minor}.${patch}a${increment}"
           bump_each_commit: false
     outputs:
-      version: ${{ github.repository == 'kdimentionaltree/ton-http-api' && github.event_name == 'push' && github.ref == 'refs/heads/master' && steps.versioning.outputs.version_tag || steps.versioning.outputs.version}}
-  build_docker:
+      version: ${{ github.ref == 'refs/heads/master' && steps.versioning.outputs.version_tag || steps.versioning.outputs.version}}
+  buildx:
     runs-on: ubuntu-20.04
     needs: [ set_version ]
     steps:
@@ -42,3 +42,36 @@ jobs:
           echo "Status:    ${{ steps.buildx.outputs.status }}"
           echo "Flags:     ${{ steps.buildx.outputs.flags }}"
           echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
+      - name: Prepare
+        run: |
+          DOCKER_IMAGE=crazymax/diun
+          DOCKER_PLATFORMS=linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/386,linux/ppc64le,linux/s390x
+          VERSION=${{ needs.set_version.outputs.version }}
+
+          TAGS="--tag ${DOCKER_IMAGE}:latest --tag ${DOCKER_IMAGE}:${VERSION}"
+
+          echo ::set-output name=docker_image::${DOCKER_IMAGE}
+          echo ::set-output name=version::${VERSION}
+          echo ::set-output name=buildx_args::--platform ${DOCKER_PLATFORMS} \
+            ${TAGS} --file ton-http-api/.docker/Dockerfile ton-http-api
+      - name: Docker Buildx (build)
+        run: |
+          docker buildx build --output "type=image,push=false" ${{ steps.prepare.outputs.buildx_args }}
+      - name: Upload image
+        uses: ishworkh/docker-image-artifact-upload@v1
+        with:
+          image: "${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }}"
+      - name: Login to DockerHub
+        if: success() && github.repository == 'kdimentionaltree/ton-http-api'
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Docker Buildx (push)
+        if: success() && github.repository == 'kdimentionaltree/ton-http-api'
+        run: |
+          docker buildx build --output "type=image,push=true" ${{ steps.prepare.outputs.buildx_args }}
+      - name: Inspect image
+        if: always() && github.repository == 'kdimentionaltree/ton-http-api'
+        run: |
+          docker buildx imagetools inspect ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }}

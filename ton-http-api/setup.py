@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 from os.path import dirname, join, pardir
 
 
-with open(join(pardir(dirname(__file__)), "README.md"), "r") as f:
+with open(join(dirname(__file__), "README.md"), "r") as f:
     long_description = f.read()
 
 version = os.environ.get('TON_HTTP_API_VERSION', '0.0.0')
