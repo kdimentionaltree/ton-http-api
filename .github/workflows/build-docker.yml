@@ -67,16 +67,16 @@ jobs:
         run: |
           docker buildx build --output "type=image,push=false" ${{ steps.prepare.outputs.buildx_args }}
       - name: Login to DockerHub
-        if: success() && github.repository == 'kdimentionaltree/ton-http-api' && github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: success() && github.repository == 'kdimentionaltree/ton-http-api' && github.event_name == 'push' # && github.ref == 'refs/heads/master'
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Docker Buildx (push)
-        if: success() && github.repository == 'kdimentionaltree/ton-http-api' && github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: success() && github.repository == 'kdimentionaltree/ton-http-api' && github.event_name == 'push' # && github.ref == 'refs/heads/master'
         run: |
           docker buildx build --output "type=image,push=true" ${{ steps.prepare.outputs.buildx_args }}
       - name: Inspect image
-        if: always() && github.repository == 'kdimentionaltree/ton-http-api' && github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: always() && github.repository == 'kdimentionaltree/ton-http-api' && github.event_name == 'push' # && github.ref == 'refs/heads/master'
         run: |
           docker buildx imagetools inspect ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }}
