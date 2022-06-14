@@ -54,7 +54,7 @@ jobs:
           echo ::set-output name=docker_image::${DOCKER_IMAGE}
           echo ::set-output name=version::${VERSION}
           echo ::set-output name=buildx_args::--platform ${DOCKER_PLATFORMS} \
-            --cache-from="type=registry,${{ steps.prepare.outputs.docker_image }}"
+            --cache-from="type=registry,${{ steps.prepare.outputs.docker_image }}" \
             ${TAGS} --file ton-http-api/.docker/Dockerfile ton-http-api
       - name: Cache Docker layers
         uses: actions/cache@v2
