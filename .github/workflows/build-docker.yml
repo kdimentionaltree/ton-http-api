@@ -1,0 +1,42 @@
+name: Build Docker Image
+
+on:
+  push:
+
+jobs:
+  set_version:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Test version
+        uses: paulhatch/semantic-version@v4.0.2
+        id: versioning
+        with:
+          tag_prefix: "v"
+          major_pattern: "[MAJOR]"
+          minor_pattern: "[MINOR]"
+          format: "${major}.${minor}.${patch}a${increment}"
+          bump_each_commit: false
+    outputs:
+      version: ${{ github.repository == 'toncenter/ton-http-api' && github.event_name == 'push' && github.ref == 'refs/heads/master' && steps.versioning.outputs.version_tag || steps.versioning.outputs.version}}
+  build_docker:
+    runs-on: ubuntu-20.04
+    needs: [ set_version ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Inspect builder
+        run: |
+          echo "Name:      ${{ steps.buildx.outputs.name }}"
+          echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
+          echo "Status:    ${{ steps.buildx.outputs.status }}"
+          echo "Flags:     ${{ steps.buildx.outputs.flags }}"
+          echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
